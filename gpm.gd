@@ -3,7 +3,7 @@ extends RefCounted
 ## Godot Package Manager API
 
 
-## Installs a package from its manifest file.
+## Installs a package from a local manifest file.
 static func install_from_json(manifest: String) -> void:
 	var dict := JSON.parse_string(manifest)
 	if dict == null or typeof(dict) != TYPE_DICTIONARY:
