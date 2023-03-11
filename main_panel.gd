@@ -13,7 +13,7 @@ func _install_from_file() -> void:
 	dialog.add_filter("*.json", "GPM Manifest File")
 	
 	add_child(dialog)
-	dialog.popup_centered()
+	dialog.popup_centered(Vector2i(800, 600))
 	var path := await dialog.file_selected as String
 	dialog.queue_free()
 	
