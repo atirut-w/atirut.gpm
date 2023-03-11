@@ -6,6 +6,21 @@ func _ready() -> void:
 	print("Main panel init")
 
 
+func _install_from_file() -> void:
+	var dialog := EditorFileDialog.new()
+	dialog.access = EditorFileDialog.ACCESS_FILESYSTEM
+	dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILE
+	dialog.add_filter("*.json", "GPM Manifest File")
+	
+	add_child(dialog)
+	dialog.popup_centered()
+	var path := await dialog.file_selected as String
+	dialog.queue_free()
+	
+	var file := FileAccess.open(path, FileAccess.READ)
+	GPM.install_from_manifest(file.get_as_text())
+
+
 func _install_from_url() -> void:
 	var install_dialog := InstallDialog.new()
 	install_dialog.canceled.connect(func(): install_dialog.queue_free())
@@ -15,7 +30,7 @@ func _install_from_url() -> void:
 	
 	var url := install_dialog.url_field.text
 	if url == "":
-		await _alert("Manifest URL cannot be empty!")
+		await GPM._alert("Manifest URL cannot be empty!")
 	else:
 		var status_dialog := StatusDialog.new()
 		status_dialog.title = "Downloading manifest..."
@@ -27,22 +42,11 @@ func _install_from_url() -> void:
 		status_dialog.queue_free()
 		
 		if manifest == "":
-			_alert("Invalid manifest file or bad URL. See log for more info.")
+			await GPM._alert("Invalid URL. See log for more info.")
+		else:
+			GPM.install_from_manifest(manifest)
 	
 	install_dialog.queue_free()
-
-
-func _alert(message: String) -> void:
-	var dialog := AcceptDialog.new()
-	var label := Label.new()
-	label.anchors_preset = Control.PRESET_FULL_RECT
-	label.text = message
-	dialog.add_child(label)
-	
-	add_child(dialog)
-	dialog.popup_centered()
-	await SignalAwaiter.wait_any([dialog.canceled, dialog.confirmed])
-	dialog.queue_free()
 
 
 class InstallDialog extends ConfirmationDialog:
@@ -75,30 +79,3 @@ class StatusDialog extends AcceptDialog:
 		get_ok_button().visible = false
 		_label.anchors_preset = Control.PRESET_FULL_RECT
 		add_child(_label)
-
-
-## Utility for waiting one or more signals
-class SignalAwaiter extends RefCounted:
-	## Wait for any signals to emit
-	static func wait_any(signals: Array[Signal]) -> void:
-		var emitter := Emitter.new()
-		for sig in signals:
-			sig.connect(emitter.emit)
-		await emitter.emitted
-	
-	
-	## Wait for all signals to emit
-	static func wait_all(signals: Array[Signal]) -> void:
-		var emitter := Emitter.new()
-		for sig in signals:
-			sig.connect(emitter.emit)
-		for i in signals.size():
-			await emitter.emitted
-	
-	
-	class Emitter extends RefCounted:
-		signal emitted
-		
-		
-		func emit() -> void:
-			emitted.emit()

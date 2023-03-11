@@ -17,4 +17,9 @@ layout_mode = 2
 layout_mode = 2
 text = "Install from manifest URL"
 
+[node name="Button2" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Install from file"
+
 [connection signal="pressed" from="HBoxContainer/Button" to="." method="_install_from_url"]
+[connection signal="pressed" from="HBoxContainer/Button2" to="." method="_install_from_file"]
