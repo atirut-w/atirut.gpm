@@ -7,17 +7,29 @@ func _ready() -> void:
 
 
 func _install_from_url() -> void:
-	var dialog := InstallDialog.new()
-	dialog.canceled.connect(func(): dialog.queue_free())
-	add_child(dialog)
-	dialog.popup_centered()
-	await dialog.confirmed
+	var install_dialog := InstallDialog.new()
+	install_dialog.canceled.connect(func(): install_dialog.queue_free())
+	add_child(install_dialog)
+	install_dialog.popup_centered()
+	await install_dialog.confirmed
 	
-	var url := dialog.url_field.text
+	var url := install_dialog.url_field.text
 	if url == "":
 		await _alert("Manifest URL cannot be empty!")
 	else:
-		GPM._fetch(url)
+		var status_dialog := StatusDialog.new()
+		status_dialog.title = "Downloading manifest..."
+		status_dialog.status = "Downloading manifest..."
+		add_child(status_dialog)
+		
+		status_dialog.popup_centered()
+		var manifest := await GPM._fetch(url)
+		status_dialog.queue_free()
+		
+		if manifest == "":
+			_alert("Invalid manifest file or bad URL. See log for more info.")
+	
+	install_dialog.queue_free()
 
 
 func _alert(message: String) -> void:
@@ -49,6 +61,20 @@ class InstallDialog extends ConfirmationDialog:
 		container.add_child(url_field)
 		
 		add_child(container)
+
+
+class StatusDialog extends AcceptDialog:
+	var _label := Label.new()
+	var status: String:
+		set(value):
+			_label.text = value
+		get:
+			return _label.text
+	
+	func _ready() -> void:
+		get_ok_button().visible = false
+		_label.anchors_preset = Control.PRESET_FULL_RECT
+		add_child(_label)
 
 
 ## Utility for waiting one or more signals
