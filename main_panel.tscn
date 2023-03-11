@@ -9,3 +9,12 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_nmr62")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+text = "Install from manifest URL"
+
+[connection signal="pressed" from="HBoxContainer/Button" to="." method="_install_from_url"]
