@@ -84,9 +84,16 @@ class PackageManifest extends RefCounted:
 		for key in dict:
 			if key in package:
 				if typeof(package[key]) == typeof(dict[key]):
-					package[key] = dict[key]
+					if typeof(package[key]) == TYPE_ARRAY:
+						for i in dict[key]:
+							package[key].append(i)
+					else:
+						package[key] = dict[key]
+				elif typeof(package[key]) == TYPE_INT && typeof(dict[key]) == TYPE_FLOAT:
+					package[key] = dict[key] as int
 				else:
-					push_error("type mismatch for key '%s'" % key)
+					push_error("type mismatch for key '%s'(expected %d, got %d)" % [key, typeof(package[key]), typeof(dict[key])])
+					return
 			else:
 				push_warning("key '%s' is not used." % key)
 		
