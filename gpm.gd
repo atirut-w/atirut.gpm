@@ -4,7 +4,7 @@ extends RefCounted
 
 
 ## Installs a package from its manifest file.
-static func install_from_manifest(manifest: String) -> void:
+static func install_from_json(manifest: String) -> void:
 	var dict := JSON.parse_string(manifest)
 	if dict == null or typeof(dict) != TYPE_DICTIONARY:
 		_alert("Bad manifest file. See log for more info.")

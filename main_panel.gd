@@ -18,7 +18,7 @@ func _install_from_file() -> void:
 	dialog.queue_free()
 	
 	var file := FileAccess.open(path, FileAccess.READ)
-	GPM.install_from_manifest(file.get_as_text())
+	GPM.install_from_json(file.get_as_text())
 
 
 func _install_from_url() -> void:
@@ -44,7 +44,7 @@ func _install_from_url() -> void:
 		if manifest == "":
 			await GPM._alert("Invalid URL. See log for more info.")
 		else:
-			GPM.install_from_manifest(manifest)
+			GPM.install_from_json(manifest)
 	
 	install_dialog.queue_free()
 
