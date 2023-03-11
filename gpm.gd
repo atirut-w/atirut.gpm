@@ -13,6 +13,13 @@ static func install_from_json(manifest: String) -> void:
 	if package == null:
 		_alert("Bad manifest file. See log for more info.")
 		return
+	
+	install(package)
+
+
+## Install a package.
+static func install(package: PackageManifest) -> void:
+	print("Installing %s..." % package.name)
 
 
 # Internal function for getting the [SceneTree].
