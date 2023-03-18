@@ -9,16 +9,14 @@ func _ready() -> void:
 func _install_from_file() -> void:
 	var dialog := EditorFileDialog.new()
 	dialog.access = EditorFileDialog.ACCESS_FILESYSTEM
-	dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_FILE
-	dialog.add_filter("*.json", "GPM Manifest File")
+	dialog.file_mode = EditorFileDialog.FILE_MODE_OPEN_DIR
 	
 	add_child(dialog)
 	dialog.popup_centered(Vector2i(800, 600))
-	var path := await dialog.file_selected as String
+	var path := await dialog.dir_selected as String
 	dialog.queue_free()
 	
-	var file := FileAccess.open(path, FileAccess.READ)
-	GPM.install_from_json(file.get_as_text())
+	GPM.install_local(path)
 
 
 func _install_from_url() -> void:

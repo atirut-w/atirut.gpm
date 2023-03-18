@@ -3,28 +3,25 @@ extends RefCounted
 ## Godot Package Manager API
 
 
-## Installs a package from a local manifest file.
-static func install_from_json(manifest: String) -> void:
-	var dict := JSON.parse_string(manifest)
-	if dict == null or typeof(dict) != TYPE_DICTIONARY:
-		_alert("Bad manifest file. See log for more info.")
-		return
-	var package := PackageManifest.from_dict(dict)
+## Install a local package.
+static func install_local(path: String) -> void:
+	var manifest = JSON.parse_string(FileAccess.get_file_as_string(path.trim_suffix("/") + "/manifest.json"))
+	if manifest == null or typeof(manifest) != TYPE_DICTIONARY:
+		_alert("Could not parse package manifest. See log for more info.")
+	var package := PackageManifest.from_dict(manifest)
 	if package == null:
-		_alert("Bad manifest file. See log for more info.")
-		return
+		_alert("Bad package manifest. See log for more info.")
 	
-	install(package)
-
-
-## Install a package.
-static func install(package: PackageManifest) -> void:
-	print("Installing %s..." % package.name)
+	
 
 
 # Internal function for getting the [SceneTree].
 static func _get_tree() -> SceneTree:
 	return Engine.get_main_loop()
+
+
+static func _append_path(path1: String, path2: String) -> String:
+	return path1.trim_suffix("/") + path2
 
 
 static func _alert(message: String) -> void:
