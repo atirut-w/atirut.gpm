@@ -68,14 +68,5 @@ class InstallDialog extends ConfirmationDialog:
 
 
 class StatusDialog extends AcceptDialog:
-	var _label := Label.new()
-	var status: String:
-		set(value):
-			_label.text = value
-		get:
-			return _label.text
-	
 	func _ready() -> void:
 		get_ok_button().visible = false
-		_label.anchors_preset = Control.PRESET_FULL_RECT
-		add_child(_label)
